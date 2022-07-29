@@ -1,10 +1,12 @@
 ﻿using Xunit;
 
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using System.Collections.Generic;
 
 namespace Alura.ByteBank.WebApp.Testes
 {
@@ -74,7 +76,7 @@ namespace Alura.ByteBank.WebApp.Testes
 
             driver.FindElement(By.Name("CPF")).Click();
             driver.FindElement(By.Name("CPF")).SendKeys("");
-            
+
             driver.FindElement(By.Name("Nome")).Click();
             driver.FindElement(By.Name("Nome")).SendKeys("Tobey Garfield");
 
@@ -84,9 +86,38 @@ namespace Alura.ByteBank.WebApp.Testes
             // Act
             driver.FindElement(By.CssSelector(".btn-primary")).Click();
             driver.FindElement(By.LinkText("Home")).Click();
-            
+
             // Assert
             Assert.Contains("Logout", driver.PageSource);
+        }
+
+        [Fact]
+        public void RealizaLoginAcessaListagemDeContas()
+        {
+            // Arrange
+            IWebDriver driver = new ChromeDriver(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+
+            driver.Navigate().GoToUrl("https://localhost:44309/UsuarioApps/Login");
+            var login = driver.FindElement(By.Name("Email"));
+            var senha = driver.FindElement(By.Name("Senha"));
+
+            login.SendKeys("andre@email.com");
+            senha.SendKeys("senha01");
+
+            driver.FindElement(By.CssSelector("#btn-logar")).Click();
+            
+            driver.FindElement(By.Id("contacorrente")).Click();
+            IReadOnlyCollection<IWebElement> elements = driver.FindElements(By.TagName("a"));
+
+            var elemento = (from webElemento in elements
+                            where webElemento.Text.Contains("Detalhes")
+                            select webElemento).First();
+
+            // Act 
+            elemento.Click();
+
+            // Assert
+            Assert.Contains("Voltar", driver.PageSource);
         }
     }
 }
