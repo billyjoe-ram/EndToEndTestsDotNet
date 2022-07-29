@@ -70,5 +70,19 @@ namespace Alura.ByteBank.WebApp.Testes
             // Assert
             Assert.Contains("img", driver.PageSource);
         }
+
+        [Fact]
+        public void TentaAcessarPaginaSemEstarLogado()
+        {
+            // Arrange
+            IWebDriver driver = new ChromeDriver(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+
+            // Act
+            driver.Navigate().GoToUrl("https://localhost:44309/Agencia/Index");
+
+            // Assert
+            Assert.Contains("https://localhost:44309/Agencia/Index", driver.Url);
+            Assert.Contains("401", driver.PageSource);
+        }
     }
 }
